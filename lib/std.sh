@@ -8,10 +8,12 @@ CLIENTS_DIR_OWNER="root:root"
 # For a single client:
 USER_DIR_PERMS="701"				# User's home dir. www, logs and related dirs live here.
 USER_DIR_OWNER="root:root" 	# User's home dir is owned by root. Required for ssh jail.
-USER_WWW_PERMS="750"				# www-data belongs to group. Group can read and exec (dirs).
+USER_WWW_PERMS="750"				# www-data belongs to group (via ACL). Group can read and exec (dirs).
 USER_TMP_PERMS="700"				# For PHP session data.
 USER_LOGS_PERMS="700"				# nginx and php-fpm logs.
 USER_PRIVATE_PERMS="700"		# Secrets user may have live here.
+
+PHP_VERSION="8.4"
 
 LAST_ERROR=""
 
@@ -42,6 +44,16 @@ pre_flight() {
 		return 1
 	fi
 
+	if ! command -v php-fpm${PHP_VERSION} &> /dev/null; then
+		LAST_ERROR="PHP-FPM $PHP_VERSION not installed. Aborting."
+		return 1
+	fi
+
+	if ! command -v mariadb-server &> /dev/null; then
+		LAST_ERROR="MariaDB not installed. Aborting."
+		return 1
+	fi
+	
 	# All tests passed. Go ahead!
 	return 0
 }
