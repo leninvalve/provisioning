@@ -37,7 +37,7 @@ pre_flight() {
 		return 1
 	fi
 
-	if ! command -v setfactl &> /dev/null; then
+	if ! command -v setfacl &> /dev/null; then
 		LAST_ERROR="Command 'setfacl' not installed. Aborting."
 		return 1
 	fi
