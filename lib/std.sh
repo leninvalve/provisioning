@@ -49,7 +49,7 @@ pre_flight() {
 		return 1
 	fi
 
-	if ! command -v mariadb-server &> /dev/null; then
+	if ! command -v mariadb &> /dev/null; then
 		LAST_ERROR="MariaDB not installed. Aborting."
 		return 1
 	fi
