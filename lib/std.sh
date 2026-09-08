@@ -25,7 +25,8 @@ pre_flight() {
 	fi
 	
 	local perms
-	perms=$(stat -c %a "$CLIENTS_DIR") if [ "$perms" != "$CLIENTS_DIR_PERMS" ]; then
+	perms=$(stat -c %a "$CLIENTS_DIR")
+ 	if [ "$perms" != "$CLIENTS_DIR_PERMS" ]; then
 		LAST_ERROR="'$CLIENTS_DIR' has wrong permissions. Expected: '$CLIENTS_DIR_PERMS'"
 		return 1
 	fi
