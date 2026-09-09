@@ -19,10 +19,11 @@ LAST_ERROR=""
 log_err() { echo "ERROR: $1"; return 0; }
 log_ok() { echo "OK: $1"; return 0; }
 
-fail() { LAST_ERROR="$1"; return 1; }
-
 pre_flight() {
-	[ ! -d "$CLIENTS_DIR" ] || return 1
+	if [ ! -d "$CLIENTS_DIR" ]; then
+		LAST_ERROR="'$CLIENTS_DIR' missing. Aborting."
+		return 1
+	fi
 	
 	local perms
 	perms=$(stat -c %a "$CLIENTS_DIR")
