@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
-# All clients live here.
-CLIENTS_DIR="/srv/clients"
+CLIENTS_DIR="/srv/clients"	# All clients's home here.
 CLIENTS_DIR_PERMS="701"
 CLIENTS_DIR_OWNER="root:root"
 
@@ -20,11 +19,10 @@ LAST_ERROR=""
 log_err() { echo "ERROR: $1"; return 0; }
 log_ok() { echo "OK: $1"; return 0; }
 
+fail() { LAST_ERROR="$1"; return 1; }
+
 pre_flight() {
-	if [ ! -d "$CLIENTS_DIR" ]; then
-		LAST_ERROR="'$CLIENTS_DIR' does not exist. Aborting."
-		return 1
-	fi
+	[ -d "$CLIENTS_DIR" ] || fail "'$CLIENTS_DIR' missing. Aborting."
 	
 	local perms
 	perms=$(stat -c %a "$CLIENTS_DIR")
