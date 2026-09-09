@@ -22,9 +22,7 @@ log_ok() { echo "OK: $1"; return 0; }
 fail() { LAST_ERROR="$1"; return 1; }
 
 pre_flight() {
-	if [ ! -d "$CLIENTS_DIR" ]; then
-		fail "'$CLIENTS_DIR' missing. Aborting."
-	fi
+	[ ! -d "$CLIENTS_DIR" ] || return 1
 	
 	local perms
 	perms=$(stat -c %a "$CLIENTS_DIR")
