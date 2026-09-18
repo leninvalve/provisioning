@@ -16,8 +16,8 @@ PHP_VERSION="8.4"
 
 LAST_ERROR=""
 
-log_err() { echo "ERROR: $1"; return 0; }
-log_ok() { echo "OK: $1"; return 0; }
+log_err() { echo ">> ERROR: $1"; return 0; }
+log_ok() { echo ">> OK: $1"; return 0; }
 
 pre_flight() {
 	local perms
