@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-CLIENTS_DIR="/srv/clients"	# All clients's home here.
-CLIENTS_DIR_PERMS="701"
-CLIENTS_DIR_OWNER="root:root"
+HOSTS_DIR="/srv/clients"	# All clients's home here.
+HOSTS_DIR_PERMS="701"
+HOSTS_DIR_OWNER="root:root"
 
 # For a single client:
 USER_DIR_PERMS="701"				# User's home dir. www, logs and related dirs live here.
@@ -20,38 +20,20 @@ log_err() { echo "ERROR: $1"; return 0; }
 log_ok() { echo "OK: $1"; return 0; }
 
 pre_flight() {
-	if [ ! -d "$CLIENTS_DIR" ]; then
-		LAST_ERROR="'$CLIENTS_DIR' missing. Aborting."
-		return 1
-	fi
-	
 	local perms
-	perms=$(stat -c %a "$CLIENTS_DIR")
- 	if [ "$perms" != "$CLIENTS_DIR_PERMS" ]; then
-		LAST_ERROR="'$CLIENTS_DIR' wrong permissions. Given: '$perms'. Expected: '$CLIENTS_DIR_PERMS'"
-		return 1
-	fi
 	local owner
-	owner=$(stat -c %U:%G "$CLIENTS_DIR")
-	if [ "$owner" != "$CLIENTS_DIR_OWNER" ]; then
-		LAST_ERROR="'$CLIENTS_DIR' wrong owner. Given: '$owner'. Expected: '$CLIENTS_DIR_OWNER'"
-		return 1
-	fi
 
-	if ! command -v setfacl &> /dev/null; then
-		LAST_ERROR="Command 'setfacl' not installed. Aborting."
-		return 1
-	fi
+	[[ -d "$HOSTS_DIR" ]] || { LAST_ERROR="'$HOSTS_DIR' missing. Aborting."; return 1; }
+	
+	perms=$(stat -c %a "$HOSTS_DIR")
+	[[ "$perms" == "$HOSTS_DIR_PERMS" ]] || { LAST_ERROR="'$HOSTS_DIR' wrong permissions: $perms. Expected: '$HOSTS_DIR_PERMS'"; return 1; }
 
-	if ! command -v php-fpm${PHP_VERSION} &> /dev/null; then
-		LAST_ERROR="PHP-FPM $PHP_VERSION not installed. Aborting."
-		return 1
-	fi
+	owner=$(stat -c %U:%G "$HOSTS_DIR")
+	[[ "$owner" == "$HOSTS_DIR_OWNER" ]] || { LAST_ERROR="'$HOSTS_DIR' wrong owner: $owner. Expected: '$HOSTS_DIR_OWNER'"; return 1; }
 
-	if ! command -v mariadb &> /dev/null; then
-		LAST_ERROR="MariaDB not installed. Aborting."
-		return 1
-	fi
+	command -v setfacl &> /dev/null || { LAST_ERROR="Command 'setfacl' not installed. Aborting."; return 1; }
+	command -v php-fpm${PHP_VERSION} &> /dev/null || { LAST_ERROR="PHP-FPM $PHP_VERSION not installed. Aborting."; return 1; }
+	command -v mariadb &> /dev/null || { LAST_ERROR="MariaDB not installed. Aborting."; return 1; }
 	
 	# All tests passed. Go ahead!
 	return 0
