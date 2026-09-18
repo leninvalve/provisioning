@@ -25,7 +25,7 @@ pre_flight() {
 	[[ "$perms" == "$HOSTS_DIR_PERMS" ]] || { log_err "'$HOSTS_DIR' wrong permissions: $perms. Expected: '$HOSTS_DIR_PERMS'"; return 1; }
 
 	owner=$(stat -c %U:%G "$HOSTS_DIR")
-	[[ "$owner" == "$HOSTS_DIR_OWNER" ]] || { log_er "'$HOSTS_DIR' wrong owner: $owner. Expected: '$HOSTS_DIR_OWNER'"; return 1; }
+	[[ "$owner" == "$HOSTS_DIR_OWNER" ]] || { log_err "'$HOSTS_DIR' wrong owner: $owner. Expected: '$HOSTS_DIR_OWNER'"; return 1; }
 
 	command -v setfacl &> /dev/null || { log_err "Command 'setfacl' not installed. Aborting."; return 1; }
 	command -v php-fpm${PHP_VERSION} &> /dev/null || { log_err "PHP-FPM $PHP_VERSION not installed. Aborting."; return 1; }

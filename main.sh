@@ -2,7 +2,9 @@
 set -euo pipefail
 
 [[ $EUID -eq 0 ]] || { echo "Run as root. Bye."; exit 1; }
-source ./lib/std.sh
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/std.sh"
 
 pre_flight || exit 1
 
