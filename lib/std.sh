@@ -12,6 +12,9 @@ readonly USER_PRIVATE_PERMS="700"		# Secrets user may have live here.
 
 readonly PHP_VERSION="8.4"
 
+readonly BYTES4BASE32=10						# CAREFUL! Number of bytes used in: head -c /dev/urandom to create username.
+readonly USERNAME_BASE="usr_"				# Base to create usernames: user_<random chars string>.
+
 log_err() { echo ">> ERROR: $1" >&2; return 0; }
 log_ok() { echo ">> OK: $1"; return 0; }
 
@@ -33,4 +36,26 @@ pre_flight() {
 	
 	# All tests passed. Go ahead!
 	return 0
+}
+
+gen_username() {
+	local basename=$USERNAME_BASE
+	local bytes4base32=$BYTES4BASE32 # bytes to bits, bits to base32 takes 5 bits, returns single character.
+
+	local random_str=$(head -c $bytes4base32 /dev/urandom | base32 | tr 'A-Z' 'a-z')
+	local username="$basename$random_str"
+
+	echo "$username"
+}
+
+add_user() {
+	local username=$(gen_username)
+	local expected_len=$(( (BYTES4BASE32 * 8 / 5) + ${#USERNAME_BASE} ))		# bytes * 8 = bits. Then, bits / 5 since base32's char = 5 bits each. 
+	
+	[[ "${#username}" -eq $expected_len ]] || { log_err "Wrong username length: ${#username}. Expected $expected_len."; return 1; }
+	while id "$username" &> /dev/null; do
+		username=$(gen_username)
+	done
+
+	echo "Adding user $username to system."
 }
